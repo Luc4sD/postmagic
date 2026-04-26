@@ -1,17 +1,12 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-const isProtectedRoute = createRouteMatcher([
-  "/dashboard(.*)",
-  "/app(.*)",
-  "/api/protected(.*)",
-]);
-
-export default clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) {
-    auth().protect();
-  }
-});
+export default clerkMiddleware();
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    // Ignora rotas internas do Next.js e arquivos estáticos (Isso resolve o erro do _not-found!)
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Executa o Clerk sempre nas rotas de API
+    '/(api|trpc)(.*)',
+  ],
 };
