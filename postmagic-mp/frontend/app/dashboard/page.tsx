@@ -1,76 +1,142 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function DashboardPage() {
-  const user = await currentUser();
+import { useState } from "react";
+import { UserButton } from "@clerk/nextjs";
+import { UploadCloud, CheckCircle2, Copy, Sparkles, Image as ImageIcon } from "lucide-react";
 
-  if (!user) {
-    redirect("/sign-in");
-  }
+export default function DashboardPage() {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [result, setResult] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const handleGenerate = () => {
+    setIsGenerating(true);
+    // Simulação de 3 segundos para testar o visual
+    setTimeout(() => {
+      setResult("✨ Aqui está o post mágico gerado para o seu produto!\n\nDescubra a qualidade e o design impecável que você sempre procurou. Perfeito para o seu dia a dia e feito para durar.\n\n👉 Clique no link da bio e garanta o seu com desconto especial!\n\n#Inovação #Qualidade #Lançamento #ProdutoPremium");
+      setIsGenerating(false);
+    }, 3000);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(result);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            Bem-vindo, {user.firstName}! 👋
-          </h1>
-          <p className="text-gray-600">
-            Email: <span className="font-semibold">{user.primaryEmailAddress?.emailAddress}</span>
-          </p>
-          <p className="text-gray-600">
-            ID Clerk: <code className="bg-gray-100 px-2 py-1 rounded text-sm">{user.id}</code>
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card de Créditos */}
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Créditos</h2>
-            <p className="text-4xl font-bold text-blue-600">3</p>
-            <p className="text-sm text-gray-500 mt-2">Créditos disponíveis</p>
+    <div className="min-h-screen bg-[#080c10] text-[#e2e8f0] font-sans selection:bg-[#22c55e] selection:text-white">
+      {/* Header */}
+      <header className="border-b border-[#1c2736] bg-[#080c10]/95 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-lg flex items-center justify-center text-[#4ade80] font-bold text-lg">
+              ✦
+            </div>
+            <span className="font-bold text-xl tracking-tight text-white" style={{ fontFamily: 'Syne, sans-serif' }}>
+              Post<span className="text-[#4ade80]">Magic</span>
+            </span>
           </div>
-
-          {/* Card de Plano */}
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Plano</h2>
-            <p className="text-lg font-bold text-green-600">Gratuito</p>
-            <p className="text-sm text-gray-500 mt-2">Upgrade para Premium</p>
-          </div>
-
-          {/* Card de Status */}
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Status</h2>
-            <p className="text-lg font-bold text-purple-600">✅ Ativo</p>
-            <p className="text-sm text-gray-500 mt-2">Conta verificada</p>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#141b24] border border-[#243044] text-sm font-medium">
+              <Sparkles className="w-4 h-4 text-[#fbbf24]" />
+              <span>3 Créditos</span>
+            </div>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
+      </header>
 
-        {/* Seção de Ações */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Próximos Passos</h2>
-          <ul className="space-y-3">
-            <li className="flex items-center">
-              <span className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center mr-3">
-                ✓
-              </span>
-              <span className="text-gray-700">Conta criada e sincronizada com Supabase</span>
-            </li>
-            <li className="flex items-center">
-              <span className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center mr-3">
-                →
-              </span>
-              <span className="text-gray-700">Explorar recursos do dashboard</span>
-            </li>
-            <li className="flex items-center">
-              <span className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center mr-3">
-                →
-              </span>
-              <span className="text-gray-700">Realizar primeiro pagamento</span>
-            </li>
-          </ul>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+
+          {/* Coluna Esquerda - Controles */}
+          <div className="bg-[#0e1319] border border-[#1c2736] rounded-2xl p-6 shadow-xl">
+            <h2 className="text-xl font-bold text-white mb-6" style={{ fontFamily: 'Syne, sans-serif' }}>Criar Novo Post</h2>
+
+            {/* Upload Area */}
+            <div className="border-2 border-dashed border-[#243044] hover:border-[#4ade80]/50 transition-colors rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer group bg-[#141b24]/50 mb-6">
+              <div className="w-14 h-14 bg-[#1c2736] group-hover:bg-[#22c55e]/10 rounded-full flex items-center justify-center mb-4 transition-colors">
+                <UploadCloud className="w-7 h-7 text-[#64748b] group-hover:text-[#4ade80]" />
+              </div>
+              <p className="text-sm font-medium text-white mb-1">Clique ou arraste a foto do produto</p>
+              <p className="text-xs text-[#64748b]">Suporta JPG, PNG e WEBP</p>
+            </div>
+
+            {/* Configurações */}
+            <div className="space-y-5 mb-8">
+              <div>
+                <label className="block text-sm font-medium text-[#64748b] mb-2">Rede Social</label>
+                <select className="w-full bg-[#141b24] border border-[#243044] text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-[#4ade80] transition-colors appearance-none">
+                  <option>Instagram</option>
+                  <option>LinkedIn</option>
+                  <option>Twitter / X</option>
+                  <option>Facebook</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#64748b] mb-2">Tom de Voz</label>
+                <select className="w-full bg-[#141b24] border border-[#243044] text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-[#4ade80] transition-colors appearance-none">
+                  <option>Profissional & Direto</option>
+                  <option>Casual & Amigável</option>
+                  <option>Divertido & Engraçado</option>
+                  <option>Inspirador & Emocionante</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(34,197,94,0.15)] hover:shadow-[0_0_25px_rgba(34,197,94,0.25)]"
+              style={{ fontFamily: 'Syne, sans-serif' }}
+            >
+              {isGenerating ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Gerando Mágica...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  ✦ Gerar Post Mágico
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Coluna Direita - Resultado */}
+          <div className="bg-[#0e1319] border border-[#1c2736] rounded-2xl p-6 shadow-xl h-full min-h-[500px] flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'Syne, sans-serif' }}>Resultado</h2>
+              {result && (
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141b24] border border-[#243044] text-[#a1a1aa] hover:text-white hover:border-[#64748b] transition-all text-sm font-medium"
+                >
+                  {copied ? <CheckCircle2 className="w-4 h-4 text-[#4ade80]" /> : <Copy className="w-4 h-4" />}
+                  {copied ? "Copiado!" : "Copiar"}
+                </button>
+              )}
+            </div>
+
+            <div className="flex-1 bg-[#141b24] border border-[#243044] rounded-xl p-6 relative overflow-hidden group">
+              {result ? (
+                <div className="text-[#e2e8f0] whitespace-pre-wrap leading-relaxed text-[15px]">
+                  {result}
+                </div>
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-[#64748b]">
+                  <ImageIcon className="w-12 h-12 mb-3 opacity-20" />
+                  <p className="text-sm font-medium">Sua legenda aparecerá aqui...</p>
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }
